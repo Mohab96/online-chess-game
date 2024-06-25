@@ -4,7 +4,8 @@ const PORT = process.env.PORT || 3000;
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
-const { db_connection } = require("./db");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
@@ -16,7 +17,7 @@ app.use(helmet());
 
 const testDBConnection = async () => {
   try {
-    await db_connection.authenticate();
+    await prisma.$connect();
     console.log("Database connected successfully");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
@@ -24,7 +25,7 @@ const testDBConnection = async () => {
 };
 
 const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Connected To Port ${PORT}`);
+  console.log(`Server connected successfully to port ${PORT}`);
   testDBConnection();
 });
 
