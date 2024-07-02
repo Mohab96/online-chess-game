@@ -4,16 +4,29 @@ const PORT = process.env.PORT || 3000;
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("./prismaClient");
+const authMiddleware = require("../middlewares/authentication");
+const mainRouter = require("./router");
+const { ApiSuccess } = require("../utils/apiResponse");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
 app.use(cors());
-app.use(express.json());
+app.use(authMiddleware);
 app.use(helmet());
+app.use(express.json());
+
+mainRouter.route("/health").get((req, res) => {
+  return ApiSuccess(res, {}, "Server is running successfully!");
+});
+
+app.use(mainRouter);
+
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 const testDBConnection = async () => {
   try {
@@ -36,3 +49,5 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+module.export = app;

@@ -14,13 +14,13 @@ model Player {
   password   String
   first_name String
   last_name  String
-  phone      String
+  phone      String?  @unique
   avatar     String?
-  logged_in  Boolean  @default(false)
+  online     Boolean  @default(false)
   in_game    Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  ip_address String
+  ip_address String   @unique
 
   friends  Player[] @relation("Friends")
   friend   Player?  @relation("Friends", fields: [playerId], references: [id])
