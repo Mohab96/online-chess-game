@@ -13,6 +13,7 @@ const ApiError = (res, message, statusCode) => {
   return res.status(statusCode).json({
     status: `${statusCode}`.startsWith(4) ? "FAIL" : "ERROR",
     message: message,
+    statusCode: statusCode,
   });
 };
 

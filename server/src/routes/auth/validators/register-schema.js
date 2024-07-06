@@ -6,7 +6,7 @@ const register = Joi.object({
   password: Joi.string().min(8).required(),
   first_name: Joi.string().required(),
   last_name: Joi.string().required(),
-  phone: Joi.string().required().min(10).max(11),
+  phone: Joi.string().min(10).max(11),
 });
 
 module.exports = register;

@@ -20,7 +20,7 @@ model Player {
   in_game    Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  ip_address String   @unique
+  ip_address String?  @unique
 
   friends  Player[] @relation("Friends")
   friend   Player?  @relation("Friends", fields: [playerId], references: [id])

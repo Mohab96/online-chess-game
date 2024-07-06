@@ -82,7 +82,7 @@ const register = async (req, res, next) => {
 
     return ApiSuccess(res, player, "Player registered successfully", 201);
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
 
     return next(ApiError(res, "An error occurred during registration", 500));
   }

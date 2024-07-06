@@ -1,5 +1,6 @@
 const express = require("express");
 const mainRouter = express.Router();
+
 const endpoints = require("../utils/endpoints.js");
 
 const authRouter = require("../routes/auth/auth.routes");
