@@ -2,7 +2,7 @@ const generateToken = require("../../../utils/generateToken");
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const verifyPassword = require("../../../utils/verifyPassword");
 const prisma = require("../../../config/prismaClient");
-// const io = require("../../../config/sockets");
+const { sendEvent } = require("../../../config/sockets");
 
 const login = async (req, res, next) => {
   const { email, password, ip_address } = req.body;
@@ -27,6 +27,16 @@ const login = async (req, res, next) => {
     );
   }
 
+  const player_with_same_ip = await prisma.player.findFirst({
+    where: { ip_address: ip_address },
+  });
+
+  if (player_with_same_ip) {
+    return next(
+      ApiError(res, "Player already logged in from this IP address", 400)
+    );
+  }
+
   await prisma.player.update({
     where: { email: email },
     data: { online: true, ip_address: ip_address },
@@ -34,6 +44,7 @@ const login = async (req, res, next) => {
 
   // Notify the client that this player has logged in to notify his friends
   // io.emit("playerIsOnline", email);
+  sendEvent("playerIsOnline", { email: email });
 
   const payload = { playerId: player.id };
   const token = await generateToken(payload, process.env.JWT_SECRET);

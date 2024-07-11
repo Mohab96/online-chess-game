@@ -8,14 +8,7 @@ const prisma = require("./prismaClient");
 const authMiddleware = require("../middlewares/authentication");
 const mainRouter = require("./router");
 const { ApiSuccess } = require("../utils/apiResponse");
-const http = require("http");
-const socketIo = require("socket.io");
-
-const ws_server = http.createServer(app);
-
-const io = socketIo(ws_server, {
-  origin: "*",
-});
+const { startServer } = require("./sockets");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
@@ -36,26 +29,4 @@ app.all("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-const connect_db = async () => {
-  try {
-    await prisma.$connect();
-    console.log("Database connected successfully");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
-
-ws_server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Server connected successfully to port ${PORT}`);
-  connect_db();
-});
-
-process.on("unhandledRejection", (err) => {
-  console.error(`Database error ${err}`);
-  ws_server.close(() => {
-    console.error(`Shutting down`);
-    process.exit(1);
-  });
-});
-
-module.exports = io;
+startServer(app);

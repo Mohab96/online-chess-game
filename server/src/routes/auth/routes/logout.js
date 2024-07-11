@@ -1,6 +1,6 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
-// const io = require("../../../config/sockets");
+const { sendEvent } = require("../../../config/sockets");
 
 const logout = async (req, res, next) => {
   const player = await prisma.player.findUnique({
@@ -18,6 +18,7 @@ const logout = async (req, res, next) => {
 
   // Notify the client that this player has logged out to notify his friends
   // io.emit("playerIsOffline", player.email);
+  sendEvent("playerIsOffline", { email: player.email });
 
   return ApiSuccess(res, {}, "Logged out successfully", 200);
 };

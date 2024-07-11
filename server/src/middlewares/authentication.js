@@ -2,7 +2,6 @@ const { expressjwt } = require("express-jwt");
 const wrap = require("express-async-wrapper");
 const endpoints = require("../utils/endpoints.js");
 const verifyToken = require("../utils/verifyToken");
-const { token } = require("morgan");
 const secret = process.env.JWT_SECRET;
 
 const allowedRoutes = [

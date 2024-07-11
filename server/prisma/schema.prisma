@@ -37,6 +37,8 @@ model Player {
 
   playerStats PlayerStats?
   settings    Setting?
+
+  messages Message[] @relation("sender")
 }
 
 model PlayerStats {
@@ -77,8 +79,11 @@ model Chat {
   second_player  Player @relation("SecondPlayerInChat", fields: [secondPlayerId], references: [id])
   secondPlayerId Int
 
-  first_message  Message @relation("firstMessageInChat", fields: [firstMessageId], references: [id])
-  firstMessageId Int     @unique
+  first_message  Message? @relation("firstMessageInChat", fields: [firstMessageId], references: [id])
+  firstMessageId Int?     @unique
+
+  last_message  Message? @relation("lastMessageInChat", fields: [lastMessageId], references: [id])
+  lastMessageId Int?     @unique
 
   messages Message[] @relation("belongsToChat")
 
@@ -91,20 +96,21 @@ model Message {
   id      Int    @id @default(autoincrement())
   content String
 
-  index   Int
   sent_at DateTime @default(now())
 
-  sender FirstOrSecondPlayer
+  sender   Player @relation("sender", fields: [senderId], references: [id])
+  senderId Int
 
-  previous_message  Message  @relation("previous_message", fields: [previousMessageId], references: [id])
-  previousMessageId Int      @unique
+  previous_message  Message?  @relation("previous_message", fields: [previousMessageId], references: [id])
+  previousMessageId Int?      @unique
   previousMessage   Message? @relation("previous_message")
 
-  next_message  Message  @relation("next_message", fields: [nextMessageId], references: [id])
-  nextMessageId Int      @unique
+  next_message  Message?  @relation("next_message", fields: [nextMessageId], references: [id])
+  nextMessageId Int?      @unique
   nextMessage   Message? @relation("next_message")
 
   firstMessageInChat Chat? @relation("firstMessageInChat")
+  lastMessageInChat Chat? @relation("lastMessageInChat")
 
   belongsToChat   Chat @relation("belongsToChat", fields: [belongsToChatId], references: [id])
   belongsToChatId Int
