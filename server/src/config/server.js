@@ -21,41 +21,41 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
-// app.use(cors());
-// app.use(authMiddleware);
-// app.use(helmet());
-// app.use(express.json());
+app.use(cors());
+app.use(authMiddleware);
+app.use(helmet());
+app.use(express.json());
 
-// mainRouter.route("/health").get((req, res) => {
-//   return ApiSuccess(res, { message: "Server is running successfully!" });
-// });
+mainRouter.route("/health").get((req, res) => {
+  return ApiSuccess(res, { message: "Server is running successfully!" });
+});
 
-// app.use(mainRouter);
+app.use(mainRouter);
 
-// app.all("*", (req, res) => {
-//   res.status(404).json({ message: "Route not found" });
-// });
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
-// const connect_db = async () => {
-//   try {
-//     await prisma.$connect();
-//     console.log("Database connected successfully");
-//   } catch (error) {
-//     console.error("Unable to connect to the database:", error);
-//   }
-// };
+const connect_db = async () => {
+  try {
+    await prisma.$connect();
+    console.log("Database connected successfully");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
 
 ws_server.listen(PORT, "127.0.0.1", () => {
   console.log(`Server connected successfully to port ${PORT}`);
-  // connect_db();
+  connect_db();
 });
 
-// process.on("unhandledRejection", (err) => {
-//   console.error(`Database error ${err}`);
-//   ws_server.close(() => {
-//     console.error(`Shutting down`);
-//     process.exit(1);
-//   });
-// });
+process.on("unhandledRejection", (err) => {
+  console.error(`Database error ${err}`);
+  ws_server.close(() => {
+    console.error(`Shutting down`);
+    process.exit(1);
+  });
+});
 
 module.exports = io;
