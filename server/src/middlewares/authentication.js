@@ -17,15 +17,17 @@ const allowedRoutes = [
   { method: "POST", route: `${endpoints.AUTH}/verify-email` },
 ];
 
-const authJwt = wrap(async (req, _, next) => {
+const isRevoked = wrap(async (req, token) => {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = await verifyToken(token, secret);
 
     req.playerId = decoded.playerId;
   }
+});
 
-  expressjwt({ secret, algorithms: ["HS256"] }).unless({
+const authJwt = expressjwt({ secret, isRevoked, algorithms: ["HS256"] }).unless(
+  {
     custom: (req) => {
       let allowed = false;
 
@@ -38,9 +40,10 @@ const authJwt = wrap(async (req, _, next) => {
 
       return allowed;
     },
-  });
+  }
+);
 
-  next();
-});
+//   return next();
+// });
 
 module.exports = authJwt;

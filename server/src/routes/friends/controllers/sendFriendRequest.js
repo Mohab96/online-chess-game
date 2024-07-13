@@ -4,7 +4,7 @@ const prisma = require("../../../config/prismaClient");
 const sendFriendRequest = async (req, res, next) => {
   // Player 1 wants to send friend request to player 2
   const player_1_id = req.playerId;
-  const player_2_id = req.body.id;
+  const player_2_id = +req.body.id;
 
   if (player_1_id === player_2_id) {
     return next(
@@ -66,8 +66,12 @@ const sendFriendRequest = async (req, res, next) => {
     try {
       const friend_request = await prisma.friendRequest.create({
         data: {
-          senderId: player_1_id,
-          receiverId: player_2_id,
+          sender: {
+            connect: { id: player_1_id },
+          },
+          receiver: {
+            connect: { id: player_2_id },
+          },
         },
       });
 

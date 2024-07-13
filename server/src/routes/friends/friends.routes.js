@@ -2,13 +2,16 @@ const express = require("express");
 const friendsRouter = express.Router();
 const validateRequest = require("../../middlewares/validateRequest");
 
-const sendFriendRequest = require("./routes/sendFriendRequest");
-const listFriendRequests = require("./routes/listFriendRequests");
-const acceptOrDeclineFriendRequest = require("./routes/acceptOrDeclineFriendRequest");
+const sendFriendRequest = require("./controllers/sendFriendRequest");
+const listFriendRequests = require("./controllers/listFriendRequests");
+const acceptOrDeclineFriendRequest = require("./controllers/acceptOrDeclineFriendRequest");
 
-const acceptOrDeclineFriendRequestSchema = require("./validators/acceptOrDeclineFriendRequest-schema");
+const acceptOrDeclineFriendRequestSchema = require("./validators/acceptOrDeclineFriendRequestSchema");
+const sendFriendRequestSchema = require("./validators/sendFriendRequestSchema");
 
-friendsRouter.route("/").post(sendFriendRequest);
+friendsRouter
+  .route("/")
+  .post(validateRequest(sendFriendRequestSchema), sendFriendRequest);
 
 friendsRouter.route("/").get(listFriendRequests);
 

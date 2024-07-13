@@ -3,7 +3,7 @@ const prisma = require("../../../config/prismaClient");
 
 const updatePlayer = async (req, res, next) => {
   const { username, first_name, last_name, phone } = { ...req.body };
-  const id = +req.params["id"];
+  const id = req.playerId;
 
   const player = await prisma.player.findUnique({
     where: {

@@ -2,11 +2,14 @@ const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
 
 const getPlayer = async (req, res, next) => {
-  const id = +req.params["id"];
+  const id = req.playerId;
 
   const player = await prisma.player.findUnique({
     where: {
       id: id,
+    },
+    include: {
+      friends: true,
     },
   });
 

@@ -1,16 +1,16 @@
 const express = require("express");
 const authRouter = express.Router();
 
-const changePassword = require("./routes/changePassword");
-const checkEmail = require("./routes/checkEmail");
-const forgotPassword = require("./routes/forgotPassword");
-const login = require("./routes/login");
-const logout = require("./routes/logout");
-const register = require("./routes/register");
-const resendCode = require("./routes/resendCode");
-const resetPassword = require("./routes/resetPassword");
-const verifyEmail = require("./routes/verifyEmail");
-const getCurrentPlayer = require("./routes/getCurrentPlayer");
+const changePassword = require("./controllers/changePassword");
+const checkEmail = require("./controllers/checkEmail");
+const forgotPassword = require("./controllers/forgotPassword");
+const login = require("./controllers/login");
+const logout = require("./controllers/logout");
+const register = require("./controllers/register");
+const resendCode = require("./controllers/resendCode");
+const resetPassword = require("./controllers/resetPassword");
+const verifyEmail = require("./controllers/verifyEmail");
+const getCurrentPlayer = require("./controllers/getCurrentPlayer");
 
 const emailSchema = require("./validators/changePassword-schema");
 const checkEmailSchema = require("./validators/checkEmail-schema");

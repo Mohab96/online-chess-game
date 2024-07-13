@@ -1,6 +1,6 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
-const io = require("../../../config/server");
+const statusCodes = require("../../../utils/statusCodes");
 
 const deleteMessage = async (req, res, next) => {
   const firstPlayerId = req.playerId;
@@ -121,7 +121,12 @@ const deleteMessage = async (req, res, next) => {
     //   id: messageId,
     // });
 
-    return ApiSuccess(res, message, "Message deleted successfully", 200);
+    return ApiSuccess(
+      res,
+      message,
+      "Message deleted successfully",
+      statusCodes.HTTP_200_SUCCESS
+    );
   } catch (error) {
     console.log(error.message);
 

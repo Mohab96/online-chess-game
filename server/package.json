@@ -28,6 +28,7 @@
     "pg": "^8.12.0",
     "postgresql": "^0.0.1",
     "prisma": "^5.15.1",
+    "redis": "^4.6.15",
     "socket.io": "^4.7.5",
     "speakeasy": "^2.0.0"
   }

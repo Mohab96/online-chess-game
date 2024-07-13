@@ -2,6 +2,7 @@ const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const hashPassword = require("../../../utils/hashPassword");
 const verifyPassword = require("../../../utils/verifyPassword");
 const prisma = require("../../../config/prismaClient");
+const statusCodes = require("../../../utils/statusCodes");
 
 const changePassword = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
@@ -30,7 +31,7 @@ const changePassword = async (req, res, next) => {
       email: player.email,
     },
     "Password has been changed successfully",
-    200
+    statusCodes.HTTP_200_SUCCESS
   );
 };
 

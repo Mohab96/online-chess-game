@@ -2,18 +2,18 @@ const express = require("express");
 const playersRouter = express.Router();
 const validateRequest = require("../../middlewares/validateRequest");
 
-const getPlayer = require("./routes/getPlayer");
-const updatePlayer = require("./routes/updatePlayer");
-const deletePlayer = require("./routes/deletePlayer");
+const getPlayer = require("./controllers/getPlayer");
+const updatePlayer = require("./controllers/updatePlayer");
+const deletePlayer = require("./controllers/deletePlayer");
 
 const updatePlayerSchema = require("./validators/updatePlayer-schema");
 
-playersRouter.route("/:id").get(getPlayer);
+playersRouter.route("/").get(getPlayer);
 
-playersRouter.route("/:id").delete(deletePlayer);
+playersRouter.route("/").delete(deletePlayer);
 
 playersRouter
-  .route("/:id")
+  .route("/")
   .patch(validateRequest(updatePlayerSchema), updatePlayer);
 
 module.exports = playersRouter;

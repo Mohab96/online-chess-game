@@ -2,8 +2,8 @@ const express = require("express");
 const settingsRouter = express.Router();
 const validateRequest = require("../../middlewares/validateRequest");
 
-const getSettings = require("./routes/getSettings");
-const updateSettings = require("./routes/updateSettings");
+const getSettings = require("./controllers/getSettings");
+const updateSettings = require("./controllers/updateSettings");
 
 const updateSettingsSchema = require("./validators/updateSettings-schema");
 

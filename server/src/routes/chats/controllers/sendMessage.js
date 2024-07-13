@@ -1,5 +1,6 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const statusCodes = require("../../../utils/statusCodes");
 
 const sendMessage = async (req, res, next) => {
   const firstPlayerId = req.playerId;
@@ -96,7 +97,12 @@ const sendMessage = async (req, res, next) => {
     //   message: message,
     // });
 
-    return ApiSuccess(res, message, "Message sent successfully", 200);
+    return ApiSuccess(
+      res,
+      message,
+      "Message sent successfully",
+      statusCodes.HTTP_200_SUCCESS
+    );
   } catch (error) {
     console.log(error.message);
 

@@ -1,10 +1,8 @@
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
-const prisma = require("./prismaClient");
 const authMiddleware = require("../middlewares/authentication");
 const mainRouter = require("./router");
 const { ApiSuccess } = require("../utils/apiResponse");

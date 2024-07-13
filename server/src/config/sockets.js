@@ -2,9 +2,16 @@
 const http = require("http");
 const socketIo = require("socket.io");
 const prisma = require("./prismaClient");
+const SERVER_PORT = process.env.SERVER_PORT || 3000;
+const REDIS_PORT = process.env.REDIS_PORT || 6379;
+const redis = require("redis");
+const redisClient = redis.createClient(REDIS_PORT, "localhost");
+const verifyToken = require("../utils/verifyToken");
+const { getPlayersSocket } = require("../utils/redisConventions");
+const secret = process.env.JWT_SECRET;
 let io;
 
-const connect_db = async () => {
+const connect_database = async () => {
   try {
     await prisma.$connect();
     console.log("Database connected successfully");
@@ -13,25 +20,28 @@ const connect_db = async () => {
   }
 };
 
-const startServer = (server) => {
+const connect_redis = async () => {
+  try {
+    await redisClient.connect();
+    console.log("Redis connected successfully to port 6379");
+  } catch (error) {
+    console.error("Unable to connect to Redis:", error);
+  }
+};
+
+const startServer = async (server) => {
   const ws_server = http.createServer(server);
 
   io = socketIo(ws_server, {
     origin: "*",
   });
 
-  ws_server.listen(3000, "127.0.0.1", () => {
-    console.log(`Server connected successfully to port ${3000}`);
-    connect_db();
-  });
+  setup_websockets();
 
-  io.on("connect", (socket) => {
-    console.log(socket);
-    console.log(`Client with id #${socket.id} connected`);
-  });
-
-  io.on("disconnect", (socket) => {
-    console.log(`Client with id #${socket.id} disconnected`);
+  ws_server.listen(SERVER_PORT, "localhost", async () => {
+    console.log(`Server connected successfully to port ${SERVER_PORT}`);
+    await connect_database();
+    await connect_redis();
   });
 
   process.on("unhandledRejection", (err) => {
@@ -39,6 +49,38 @@ const startServer = (server) => {
     ws_server.close(() => {
       console.error(`Shutting down`);
       process.exit(1);
+    });
+  });
+};
+
+const setup_websockets = () => {
+  // Websockets authentication middleware
+  io.use(async (socket, next) => {
+    const token = socket.handshake.query.token;
+
+    if (token) {
+      const decoded = await verifyToken(token, secret);
+
+      socket.playerId = decoded.playerId;
+
+      redisClient.set(getPlayersSocket(socket.playerId), socket.id);
+      next();
+    } else {
+      next(new Error("Unauthorized: no token was found"));
+    }
+  });
+
+  io.on("connect", (socket) => {
+    console.log(
+      `Player #${socket.playerId} connected on socket with id #${socket.id}`
+    );
+
+    socket.on("disconnect", () => {
+      console.log(
+        `Player #${socket.playerId} disconnected from socket with id #${socket.id}`
+      );
+
+      redisClient.del(getPlayersSocket(socket.playerId));
     });
   });
 };
@@ -59,4 +101,4 @@ socket.on("connect", () => {
 
 */
 
-module.exports = { startServer, sendEvent };
+module.exports = { startServer, sendEvent, redisClient };

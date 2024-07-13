@@ -2,9 +2,9 @@ const express = require("express");
 const chatsRouter = express.Router();
 const validateRequest = require("../../middlewares/validateRequest");
 
-const getChat = require("./routes/getChat");
-const sendMessage = require("./routes/sendMessage");
-const deleteMessage = require("./routes/deleteMessage");
+const getChat = require("./controllers/getChat");
+const sendMessage = require("./controllers/sendMessage");
+const deleteMessage = require("./controllers/deleteMessage");
 
 const getChatSchema = require("./validators/getChatSchema");
 const sendMessageSchema = require("./validators/sendMessageSchema");

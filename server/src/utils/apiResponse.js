@@ -1,4 +1,11 @@
-const ApiSuccess = (res, data = {}, message = "OK", statusCode = 200) => {
+const statusCodes = require("./statusCodes");
+
+const ApiSuccess = (
+  res,
+  data = {},
+  message = "OK",
+  statusCode = statusCodes.HTTP_200_SUCCESS
+) => {
   const jsonObj = {
     status: "OK",
     message,
@@ -18,7 +25,7 @@ const ApiError = (res, message, statusCode) => {
 };
 
 const Validation = (res, errors) => {
-  return res.status(400).json({
+  return res.status().json({
     status: "ERROR",
     errors: errors,
   });
