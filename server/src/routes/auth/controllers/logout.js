@@ -1,7 +1,8 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
-const { sendEvent } = require("../../../config/sockets");
 const statusCodes = require("../../../utils/statusCodes");
+const { INVALIDATED_TOKENS } = require("../../../utils/redisUtils");
+const { redisClient } = require("../../../config/connect_redis");
 
 const logout = async (req, res, next) => {
   const player = await prisma.player.findUnique({
@@ -9,13 +10,13 @@ const logout = async (req, res, next) => {
   });
 
   if (!player) {
-    return next(ApiError(res, "Player not found", 404));
+    return ApiError(res, "Player not found", 404);
   }
 
-  // TODO: invalidate the token
-
-  // Notify the client that this player has logged out to notify his friends
-  // io.emit("playerIsOffline", player.email);
+  // IDEA: Make for every user a key that contains all his invalidated tokens
+  let invalidated_tokens = await redisClient.get(INVALIDATED_TOKENS);
+  invalidated_tokens += `|${req.headers.authorization.split(" ")[1]}`;
+  await redisClient.set(INVALIDATED_TOKENS, invalidated_tokens);
 
   return ApiSuccess(
     res,

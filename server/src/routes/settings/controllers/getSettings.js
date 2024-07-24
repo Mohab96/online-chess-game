@@ -1,5 +1,8 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const getSettings = async (req, res, next) => {
   try {
@@ -16,7 +19,7 @@ const getSettings = async (req, res, next) => {
     return ApiError(
       res,
       "An error occured while retrieving your settings",
-      500
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

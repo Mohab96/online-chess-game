@@ -1,5 +1,10 @@
 const { ApiError, ApiSuccess } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_400_BAD_REQUEST,
+  HTTP_500_INTERNAL_SERVER_ERROR,
+  HTTP_201_CREATED,
+} = require("../../../utils/statusCodes");
 
 const sendFriendRequest = async (req, res, next) => {
   // Player 1 wants to send friend request to player 2
@@ -7,8 +12,10 @@ const sendFriendRequest = async (req, res, next) => {
   const player_2_id = +req.body.id;
 
   if (player_1_id === player_2_id) {
-    return next(
-      ApiError(res, "You cannot send a friend request to yourself", 400)
+    return ApiError(
+      res,
+      "You cannot send a friend request to yourself",
+      HTTP_400_BAD_REQUEST
     );
   }
 
@@ -19,7 +26,7 @@ const sendFriendRequest = async (req, res, next) => {
   });
 
   if (!receiver) {
-    return next(ApiError(res, "No player with this id was found", 404));
+    return ApiError(res, "No player with this id was found", 404);
   } else {
     try {
       const same_player = await prisma.friendRequest.findFirst({
@@ -30,12 +37,10 @@ const sendFriendRequest = async (req, res, next) => {
       });
 
       if (same_player) {
-        return next(
-          ApiError(
-            res,
-            "You've already sent friend request to this player and waiting his response",
-            400
-          )
+        return ApiError(
+          res,
+          "You've already sent friend request to this player and waiting his response",
+          HTTP_400_BAD_REQUEST
         );
       }
 
@@ -47,19 +52,19 @@ const sendFriendRequest = async (req, res, next) => {
       });
 
       if (other_player_already_sent) {
-        return next(
-          ApiError(
-            res,
-            "The other player has already sent you a friend request and waiting your response",
-            400
-          )
+        return ApiError(
+          res,
+          "The other player has already sent you a friend request and waiting your response",
+          HTTP_400_BAD_REQUEST
         );
       }
     } catch (error) {
       console.log(error.message);
 
-      return next(
-        ApiError(res, "An error occurred during sending friend request", 500)
+      return ApiError(
+        res,
+        "An error occurred during sending friend request",
+        HTTP_500_INTERNAL_SERVER_ERROR
       );
     }
 
@@ -79,13 +84,15 @@ const sendFriendRequest = async (req, res, next) => {
         res,
         friend_request,
         "Friend request sent successfully",
-        201
+        HTTP_201_CREATED
       );
     } catch (error) {
       console.log(error.message);
 
-      return next(
-        ApiError(res, "An error occurred during sending friend request", 500)
+      return ApiError(
+        res,
+        "An error occurred during sending friend request",
+        HTTP_500_INTERNAL_SERVER_ERROR
       );
     }
   }

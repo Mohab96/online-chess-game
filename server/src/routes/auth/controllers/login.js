@@ -2,7 +2,15 @@ const generateToken = require("../../../utils/generateToken");
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const verifyPassword = require("../../../utils/verifyPassword");
 const prisma = require("../../../config/prismaClient");
-const { sendEvent, redisClient } = require("../../../config/sockets");
+const {
+  getPlayerSocket,
+  INVALIDATED_TOKENS,
+} = require("../../../utils/redisUtils");
+const {
+  HTTP_400_BAD_REQUEST,
+  HTTP_401_UNAUTHORIZED,
+} = require("../../../utils/statusCodes");
+const { redisClient } = require("../../../config/connect_redis");
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -12,19 +20,37 @@ const login = async (req, res, next) => {
   });
 
   if (!player) {
-    return next(ApiError(res, "Invalid email", 400));
+    return ApiError(res, "Invalid email", HTTP_400_BAD_REQUEST);
   }
 
   const is_valid = await verifyPassword(password, player.password);
 
   if (!is_valid) {
-    return next(ApiError(res, "Invalid password", 400));
+    return ApiError(res, "Invalid password", HTTP_400_BAD_REQUEST);
   }
 
-  redisClient.get();
+  const is_invalidated_token = await redisClient
+    .get(INVALIDATED_TOKENS)
+    .split("|")
+    .includes(token);
 
-  // Notify the client that this player has logged in to notify his friends
-  // io.emit("playerIsOnline", email);
+  if (is_invalidated_token) {
+    return ApiError(
+      res,
+      "Unauthorized: token has been invalidated, please login again",
+      HTTP_401_UNAUTHORIZED
+    );
+  }
+
+  const socket = await redisClient.get(getPlayerSocket(player.id));
+
+  if (socket) {
+    return ApiError(
+      res,
+      "Player already logged in from another device",
+      HTTP_400_BAD_REQUEST
+    );
+  }
 
   const payload = { playerId: player.id };
   const token = await generateToken(payload, process.env.JWT_SECRET);

@@ -114,13 +114,6 @@ model Message {
   belongsToChatId Int
 }
 
-enum GameStatus {
-  ongoing
-  draw
-  first_player_won
-  second_player_won
-}
-
 model Game {
   id Int @id @default(autoincrement())
 
@@ -130,12 +123,10 @@ model Game {
   second_player  Player @relation("SecondPlayerInGame", fields: [secondPlayerId], references: [id])
   secondPlayerId Int
 
-  total_time        Int
-  started_at        DateTime   @default(now())
-  last_move_at      DateTime   @default(now())
-  takebacks_enabled Boolean
-  game_status       GameStatus @default(ongoing)
-  turn              Int        @default(1)
+  started_at   DateTime @default(now())
+  last_move_at DateTime @default(now())
+  turn         Int      @default(1)
+  board        String   @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
   moves Move[]
 
@@ -149,10 +140,9 @@ model Move {
   game   Game @relation(fields: [gameId], references: [id])
   gameId Int
 
-  player        Int
+  player        Int // 1 for first player, 2 for second player
   move_notation String
-  move_index    Int
-  created_at    DateTime @default(now())
+  played_at     DateTime @default(now())
 }
 
 model Setting {

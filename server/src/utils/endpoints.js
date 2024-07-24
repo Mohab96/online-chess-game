@@ -1,4 +1,4 @@
-const VERSION = "/api/v1";
+const VERSION = "/api";
 const AUTH = `${VERSION}/auth`;
 const CHATS = `${VERSION}/chats`;
 const FRIENDS = `${VERSION}/friends`;

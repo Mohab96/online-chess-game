@@ -5,12 +5,11 @@ const verifyToken = require("../utils/verifyToken");
 const secret = process.env.JWT_SECRET;
 
 const allowedRoutes = [
-  { method: "GET", route: "/health" },
-  { method: "POST", route: `${endpoints.AUTH}/change-password` },
+  { method: "GET", route: "/api/health" },
+  { method: "GET", route: "/api/search/:query" },
   { method: "POST", route: `${endpoints.AUTH}/check-email` },
   { method: "POST", route: `${endpoints.AUTH}/forgot-password` },
   { method: "POST", route: `${endpoints.AUTH}/login` },
-  { method: "POST", route: `${endpoints.AUTH}/logout` },
   { method: "POST", route: `${endpoints.AUTH}/register` },
   { method: "POST", route: `${endpoints.AUTH}/resend-code` },
   { method: "POST", route: `${endpoints.AUTH}/reset-password` },
@@ -42,8 +41,5 @@ const authJwt = expressjwt({ secret, isRevoked, algorithms: ["HS256"] }).unless(
     },
   }
 );
-
-//   return next();
-// });
 
 module.exports = authJwt;

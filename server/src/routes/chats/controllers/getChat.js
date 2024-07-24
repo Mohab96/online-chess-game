@@ -1,5 +1,8 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const getChat = async (req, res, next) => {
   const firstPlayerId = req.playerId;
@@ -47,8 +50,10 @@ const getChat = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
 
-    return next(
-      ApiError(res, "An error occured while retrieving your chat", 500)
+    return ApiError(
+      res,
+      "An error occured while retrieving your chat",
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

@@ -5,21 +5,19 @@ const morgan = require("morgan");
 const cors = require("cors");
 const authMiddleware = require("../middlewares/authentication");
 const mainRouter = require("./router");
-const { ApiSuccess } = require("../utils/apiResponse");
 const { startServer } = require("./sockets");
+require("./../routes/miscRoutes");
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("combined"));
-}
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(morgan("combined"));
 app.use(cors());
 app.use(authMiddleware);
 app.use(helmet());
 app.use(express.json());
-
-mainRouter.route("/health").get((req, res) => {
-  return ApiSuccess(res, { message: "Server is running successfully!" });
-});
 
 app.use(mainRouter);
 

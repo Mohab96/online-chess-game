@@ -1,11 +1,21 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
-const statusCodes = require("../../../utils/statusCodes");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+  HTTP_200_SUCCESS,
+} = require("../../../utils/statusCodes");
+const { getPlayerSocket } = require("../../../utils/redisUtils");
+const { redisClient } = require("../../../config/connect_redis");
+const { io } = require("../../../config/sockets");
 
-const sendMessage = async (req, res, next) => {
+const sendMessage = async (req, res) => {
   const firstPlayerId = req.playerId;
   let { secondPlayerId, message } = req.body;
   secondPlayerId = +secondPlayerId;
+
+  const receiver_socket_id = await redisClient.get(
+    getPlayerSocket(secondPlayerId)
+  );
 
   try {
     let chat = await prisma.chat.findFirst({
@@ -23,6 +33,8 @@ const sendMessage = async (req, res, next) => {
       },
     });
 
+    let newMessage;
+
     if (!chat || !chat.firstMessageId) {
       // First message in the chat
       if (!chat) {
@@ -34,7 +46,7 @@ const sendMessage = async (req, res, next) => {
         });
       }
 
-      const newMessage = await prisma.message.create({
+      newMessage = await prisma.message.create({
         data: {
           belongsToChat: {
             connect: { id: chat.id },
@@ -63,7 +75,7 @@ const sendMessage = async (req, res, next) => {
         },
       });
 
-      const newMessage = await prisma.message.create({
+      newMessage = await prisma.message.create({
         data: {
           belongsToChatId: chat.id,
           senderId: firstPlayerId,
@@ -91,23 +103,24 @@ const sendMessage = async (req, res, next) => {
       });
     }
 
-    // io.to(secondPlayerId).emit("newMessage", {
-    //   chatId: chat.id,
-    //   senderId: firstPlayerId,
-    //   message: message,
-    // });
+    io.sockets.sockets.get(receiver_socket_id).emit("message", {
+      sender_id: sender_id,
+      message: message,
+    });
 
     return ApiSuccess(
       res,
-      message,
+      newMessage,
       "Message sent successfully",
-      statusCodes.HTTP_200_SUCCESS
+      HTTP_200_SUCCESS
     );
   } catch (error) {
     console.log(error.message);
 
-    return next(
-      ApiError(res, "An error occured while retrieving your chat", 500)
+    return ApiError(
+      res,
+      "An error occured while sending your message",
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

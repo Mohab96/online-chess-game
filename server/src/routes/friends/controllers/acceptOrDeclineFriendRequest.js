@@ -1,5 +1,9 @@
 const { ApiError, ApiSuccess } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_400_BAD_REQUEST,
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const acceptOrDeclineFriendRequest = async (req, res, next) => {
   // Accept or reject friend request sent to the currently authenticated user
@@ -7,12 +11,10 @@ const acceptOrDeclineFriendRequest = async (req, res, next) => {
   const { status } = req.body;
 
   if (status != "accepted" && status != "rejected") {
-    return next(
-      ApiError(
-        res,
-        "Please enter valid status, either accepted or rejected",
-        400
-      )
+    return ApiError(
+      res,
+      "Please enter valid status, either accepted or rejected",
+      HTTP_400_BAD_REQUEST
     );
   }
 
@@ -25,12 +27,10 @@ const acceptOrDeclineFriendRequest = async (req, res, next) => {
     });
 
     if (!friend_request) {
-      return next(
-        ApiError(
-          res,
-          "No friend request with this id was found or not sent to this user",
-          404
-        )
+      return ApiError(
+        res,
+        "No friend request with this id was found or not sent to this user",
+        404
       );
     }
 
@@ -72,12 +72,10 @@ const acceptOrDeclineFriendRequest = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
 
-    return next(
-      ApiError(
-        res,
-        "An error occured while accepting/rejecting the friend request",
-        500
-      )
+    return ApiError(
+      res,
+      "An error occured while accepting/rejecting the friend request",
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

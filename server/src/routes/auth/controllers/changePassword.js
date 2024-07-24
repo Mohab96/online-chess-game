@@ -2,7 +2,7 @@ const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const hashPassword = require("../../../utils/hashPassword");
 const verifyPassword = require("../../../utils/verifyPassword");
 const prisma = require("../../../config/prismaClient");
-const statusCodes = require("../../../utils/statusCodes");
+const { HTTP_400_BAD_REQUEST } = require("../../../utils/statusCodes");
 
 const changePassword = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
@@ -15,7 +15,7 @@ const changePassword = async (req, res, next) => {
   const is_valid = await verifyPassword(oldPassword, player.password);
 
   if (!is_valid) {
-    return next(ApiError(res, "Invalid password", 400));
+    return ApiError(res, "Invalid password", HTTP_400_BAD_REQUEST);
   }
 
   const hashed_password = await hashPassword(newPassword);

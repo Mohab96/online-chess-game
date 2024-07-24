@@ -14,10 +14,11 @@ chatsRouter.get("/get", validateRequest(getChatSchema), getChat);
 
 chatsRouter.post("/send", validateRequest(sendMessageSchema), sendMessage);
 
-chatsRouter.delete(
-  "/delete",
-  validateRequest(deleteMessageSchema),
-  deleteMessage
-);
+// This endpoint will be disabled until further invistigation is done
+// chatsRouter.delete(
+//   "/delete",
+//   validateRequest(deleteMessageSchema),
+//   deleteMessage
+// );
 
 module.exports = chatsRouter;

@@ -1,5 +1,9 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_400_BAD_REQUEST,
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const updatePlayer = async (req, res, next) => {
   const { username, first_name, last_name, phone } = { ...req.body };
@@ -12,7 +16,7 @@ const updatePlayer = async (req, res, next) => {
   });
 
   if (!player) {
-    return next(ApiError(res, "Player not found", 404));
+    return ApiError(res, "Player not found", 404);
   }
 
   if (username && username != player.username) {
@@ -23,8 +27,10 @@ const updatePlayer = async (req, res, next) => {
     });
 
     if (username_exists) {
-      return next(
-        ApiError(res, "Player with this username already exists", 400)
+      return ApiError(
+        res,
+        "Player with this username already exists",
+        HTTP_400_BAD_REQUEST
       );
     }
   }
@@ -37,7 +43,11 @@ const updatePlayer = async (req, res, next) => {
     });
 
     if (phone_exists) {
-      return next(ApiError(res, "Player with this phone already exists", 400));
+      return ApiError(
+        res,
+        "Player with this phone already exists",
+        HTTP_400_BAD_REQUEST
+      );
     }
   }
 
@@ -56,7 +66,7 @@ const updatePlayer = async (req, res, next) => {
 
     return ApiSuccess(res, player, "Player updated successfully");
   } catch (error) {
-    next(ApiError(res, error.message, 500));
+    return ApiError(res, error.message, HTTP_500_INTERNAL_SERVER_ERROR);
   }
 };
 

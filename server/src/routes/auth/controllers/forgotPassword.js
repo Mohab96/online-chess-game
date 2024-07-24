@@ -3,6 +3,7 @@ const { generateSecret, generateOTP } = require("../../../utils/otpService");
 const emailService = require("../../../utils/emailService");
 const generateToken = require("../../../utils/generateToken");
 const prisma = require("../../../config/prismaClient");
+const { HTTP_404_NOT_FOUND } = require("../../../utils/statusCodes");
 
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
@@ -12,7 +13,7 @@ const forgotPassword = async (req, res, next) => {
   });
 
   if (!isEmailExist) {
-    return next(ApiError(res, "Email not registered", 404));
+    return ApiError(res, "Email not registered", HTTP_404_NOT_FOUND);
   }
 
   const otpSecret = generateSecret();
@@ -20,13 +21,13 @@ const forgotPassword = async (req, res, next) => {
 
   await emailService.sendVerificationEmail(email, otp);
 
-  const token = await generateToken(
-    { otpSecret },
-    process.env.VERIFICATION_SECRET_TOKEN,
-    "2m"
-  );
+  // const token = await generateToken(
+  //   { otpSecret },
+  //   process.env.VERIFICATION_SECRET_TOKEN,
+  //   "2m"
+  // );
 
-  return ApiSuccess(res, { token: token }, "Check your email for the OTP");
+  return ApiSuccess(res, otpSecret, "Check your email for the OTP");
 };
 
 module.exports = forgotPassword;

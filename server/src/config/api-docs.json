@@ -1,0 +1,703 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Online Chess Game API",
+    "version": "1.0.0",
+    "description": "The Online Chess Game API allows players to join chess games, make moves, invite other players to join games, and manage their ongoing matches. The API supports real-time interactions through WebSockets for instant game updates and HTTP endpoints for managing game states. Players can authenticate, manage their profiles, and track their game progress through this API."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Development server"
+    },
+    {
+      "url": "https://staging-api.example.com/v1",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Main",
+      "description": "Main related endpoints"
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication related endpoints"
+    },
+    {
+      "name": "Chats",
+      "description": "Chat related endpoints"
+    },
+    {
+      "name": "Friends",
+      "description": "Friend requests related endpoints"
+    },
+    {
+      "name": "Game",
+      "description": "Game module endpoints"
+    },
+    {
+      "name": "Players",
+      "description": "Player management endpoints"
+    },
+    {
+      "name": "Settings",
+      "description": "Settings management endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/change-password": {
+      "post": {
+        "summary": "Change Password",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully"
+          }
+        }
+      }
+    },
+    "/auth/check-email": {
+      "post": {
+        "summary": "Check Email",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email is valid"
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Forgot Password",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Forgot password request processed"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Register",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration successful"
+          }
+        }
+      }
+    },
+    "/auth/resend-code": {
+      "post": {
+        "summary": "Resend Code",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code resent successfully"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset Password",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "post": {
+        "summary": "Verify Email",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Get Current Player",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Current player data"
+          }
+        }
+      }
+    },
+    "/chats/get": {
+      "get": {
+        "summary": "Get Chat",
+        "tags": ["Chats"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "chatId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the chat to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat data"
+          }
+        }
+      }
+    },
+    "/chats/send": {
+      "post": {
+        "summary": "Send Message",
+        "tags": ["Chats"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent successfully"
+          }
+        }
+      }
+    },
+    "/friends": {
+      "post": {
+        "summary": "Send Friend Request",
+        "tags": ["Friends"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendFriendRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Friend request sent successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Friend Requests",
+        "tags": ["Friends"],
+        "responses": {
+          "200": {
+            "description": "List of friend requests"
+          }
+        }
+      }
+    },
+    "/friends/{id}": {
+      "patch": {
+        "summary": "Accept or Decline Friend Request",
+        "tags": ["Friends"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the friend request"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptOrDeclineFriendRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Friend request processed successfully"
+          }
+        }
+      }
+    },
+    "/games/join": {
+      "post": {
+        "summary": "Join Game",
+        "tags": ["Game"],
+        "responses": {
+          "200": {
+            "description": "Joined game successfully"
+          }
+        }
+      }
+    },
+    "/games/{gameId}/move": {
+      "post": {
+        "summary": "Make Move",
+        "tags": ["Game"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "gameId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the game"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeMove"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Move made successfully"
+          }
+        }
+      }
+    },
+    "/games/invite/{playerId}": {
+      "post": {
+        "summary": "Invite Player to Join Game",
+        "tags": ["Game"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playerId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the player"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player invited successfully"
+          }
+        }
+      }
+    },
+    "/players": {
+      "get": {
+        "summary": "Get Player",
+        "tags": ["Players"],
+        "responses": {
+          "200": {
+            "description": "Player data"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Player",
+        "tags": ["Players"],
+        "responses": {
+          "200": {
+            "description": "Player deleted successfully"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Player",
+        "tags": ["Players"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlayer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Player updated successfully"
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "summary": "Get Settings",
+        "tags": ["Settings"],
+        "responses": {
+          "200": {
+            "description": "Settings data"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Settings",
+        "tags": ["Settings"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings updated successfully"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Main"],
+        "summary": "Health Check",
+        "description": "Returns a message indicating that the server is running.",
+        "responses": {
+          "200": {
+            "description": "Server is running successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Server is running successfully!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/{query}": {
+      "get": {
+        "tags": ["Main"],
+        "summary": "Search",
+        "description": "Search based on the query parameter.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "path",
+            "required": true,
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ChangePassword": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "CheckEmail": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Register": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": ["username", "email", "password", "first_name", "last_name"]
+      },
+      "ResetPassword": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          },
+          "otpSecret": {
+            "type": "string"
+          },
+          "otp": {
+            "type": "string"
+          }
+        }
+      },
+      "VerifyEmail": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "otpSecret": {
+            "type": "string"
+          }
+        }
+      },
+      "SendMessage": {
+        "type": "object",
+        "properties": {
+          "secondPlayerId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "SendFriendRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "AcceptOrDeclineFriendRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["accepted", "rejected"]
+          }
+        }
+      },
+      "MakeMove": {
+        "type": "object",
+        "properties": {
+          "move_notation": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePlayer": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateSettings": {
+        "type": "object",
+        "properties": {
+          "sound_enabled": {
+            "type": "boolean"
+          },
+          "takebacks_enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

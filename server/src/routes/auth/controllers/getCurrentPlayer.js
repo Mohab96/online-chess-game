@@ -11,7 +11,7 @@ const getCurrentPlayer = async (req, res, next) => {
   if (player) {
     return ApiSuccess(res, player);
   } else {
-    return next(ApiError(res, "Player not found", 404));
+    return ApiError(res, "Player not found", 404);
   }
 };
 

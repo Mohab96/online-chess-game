@@ -12,7 +12,7 @@ const resetPassword = require("./controllers/resetPassword");
 const verifyEmail = require("./controllers/verifyEmail");
 const getCurrentPlayer = require("./controllers/getCurrentPlayer");
 
-const emailSchema = require("./validators/changePassword-schema");
+const changePasswordSchema = require("./validators/changePassword-schema");
 const checkEmailSchema = require("./validators/checkEmail-schema");
 const loginSchema = require("./validators/login-schema");
 const registerSchema = require("./validators/register-schema");
@@ -23,7 +23,7 @@ const validateRequest = require("../../middlewares/validateRequest");
 
 authRouter
   .route("/change-password")
-  .post(validateRequest(emailSchema), changePassword);
+  .post(validateRequest(changePasswordSchema), changePassword);
 
 authRouter
   .route("/check-email")

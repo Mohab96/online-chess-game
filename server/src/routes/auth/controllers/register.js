@@ -1,6 +1,11 @@
 const prisma = require("../../../config/prismaClient");
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const hashPassword = require("../../../utils/hashPassword");
+const {
+  HTTP_400_BAD_REQUEST,
+  HTTP_500_INTERNAL_SERVER_ERROR,
+  HTTP_201_CREATED,
+} = require("../../../utils/statusCodes");
 
 const register = async (req, res, next) => {
   const { username, email, password, first_name, last_name, phone } = req.body;
@@ -13,7 +18,7 @@ const register = async (req, res, next) => {
   });
 
   if (email_exists) {
-    return next(ApiError(res, "Email is already registered", 400));
+    return ApiError(res, "Email is already registered", HTTP_400_BAD_REQUEST);
   }
 
   // Check if the username is already taken
@@ -24,7 +29,11 @@ const register = async (req, res, next) => {
   });
 
   if (username_exists) {
-    return next(ApiError(res, "Username is already registered", 400));
+    return ApiError(
+      res,
+      "Username is already registered",
+      HTTP_400_BAD_REQUEST
+    );
   }
 
   // Check if the phone number is already registered
@@ -36,7 +45,7 @@ const register = async (req, res, next) => {
     });
 
     if (phone_exists)
-      return next(ApiError(res, "Phone is already registered", 400));
+      return ApiError(res, "Phone is already registered", HTTP_400_BAD_REQUEST);
   }
 
   hashed_password = await hashPassword(password);
@@ -80,11 +89,20 @@ const register = async (req, res, next) => {
       }
     );
 
-    return ApiSuccess(res, player, "Player registered successfully", 201);
+    return ApiSuccess(
+      res,
+      player,
+      "Player registered successfully",
+      HTTP_201_CREATED
+    );
   } catch (error) {
     console.log(error.message);
 
-    return next(ApiError(res, "An error occurred during registration", 500));
+    return ApiError(
+      res,
+      "An error occurred during registration",
+      HTTP_500_INTERNAL_SERVER_ERROR
+    );
   }
 };
 

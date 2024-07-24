@@ -1,5 +1,8 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const updateSettings = async (req, res, next) => {
   const { sound_enabled, takebacks_enabled } = req.body;
@@ -25,7 +28,11 @@ const updateSettings = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
 
-    return ApiError(res, "An error occured while updating your settings", 500);
+    return ApiError(
+      res,
+      "An error occured while updating your settings",
+      HTTP_500_INTERNAL_SERVER_ERROR
+    );
   }
 };
 

@@ -1,6 +1,9 @@
 const { ApiError, ApiSuccess } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
 const sendFriendRequest = require("./sendFriendRequest");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+} = require("../../../utils/statusCodes");
 
 const listFriendRequests = async (req, res, next) => {
   // List of friend requests sent/recieved by currently authenticated user
@@ -42,12 +45,10 @@ const listFriendRequests = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
 
-    return next(
-      ApiError(
-        res,
-        "An error occured while retrieving the list of friend requests",
-        500
-      )
+    return ApiError(
+      res,
+      "An error occured while retrieving the list of friend requests",
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

@@ -1,10 +1,13 @@
 const { ApiSuccess, ApiError } = require("../../../utils/apiResponse");
 const prisma = require("../../../config/prismaClient");
-const statusCodes = require("../../../utils/statusCodes");
+const {
+  HTTP_500_INTERNAL_SERVER_ERROR,
+  HTTP_401_UNAUTHORIZED,
+} = require("../../../utils/statusCodes");
 
 const deleteMessage = async (req, res, next) => {
   const firstPlayerId = req.playerId;
-  const { secondPlaterId, messageId } = req.body;
+  const { secondPlayerId, messageId } = req.body;
 
   try {
     const message = await prisma.message.findUnique({
@@ -14,7 +17,7 @@ const deleteMessage = async (req, res, next) => {
     });
 
     if (!message) {
-      return next(ApiError(res, "Message not found", 404));
+      return ApiError(res, "Message not found", 404);
     }
 
     await prisma.message.delete({
@@ -24,12 +27,10 @@ const deleteMessage = async (req, res, next) => {
     });
 
     if (message.senderId !== firstPlayerId) {
-      return next(
-        ApiError(
-          res,
-          "Unauthorized: Only the sender can delete the message",
-          401
-        )
+      return ApiError(
+        res,
+        "Unauthorized: Only the sender can delete the message",
+        HTTP_401_UNAUTHORIZED
       );
     }
 
@@ -116,11 +117,6 @@ const deleteMessage = async (req, res, next) => {
       });
     }
 
-    // io.to(secondPlayerId).emit("deleteMessage", {
-    //   chatId: chat.id,
-    //   id: messageId,
-    // });
-
     return ApiSuccess(
       res,
       message,
@@ -130,8 +126,10 @@ const deleteMessage = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
 
-    return next(
-      ApiError(res, "An error occured while deleting your message", 500)
+    return ApiError(
+      res,
+      "An error occured while deleting your message",
+      HTTP_500_INTERNAL_SERVER_ERROR
     );
   }
 };

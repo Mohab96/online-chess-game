@@ -1,33 +1,17 @@
-// const io = require("../config/server");
 const http = require("http");
 const socketIo = require("socket.io");
-const prisma = require("./prismaClient");
-const SERVER_PORT = process.env.SERVER_PORT || 3000;
-const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const redis = require("redis");
-const redisClient = redis.createClient(REDIS_PORT, "localhost");
-const verifyToken = require("../utils/verifyToken");
-const { getPlayersSocket } = require("../utils/redisConventions");
-const secret = process.env.JWT_SECRET;
+const listen_to_events = require("../websocket_events/received_events");
 let io;
 
-const connect_database = async () => {
-  try {
-    await prisma.$connect();
-    console.log("Database connected successfully");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
+const SERVER_PORT = process.env.SERVER_PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+const connect_database = require("./connect_db");
 
-const connect_redis = async () => {
-  try {
-    await redisClient.connect();
-    console.log("Redis connected successfully to port 6379");
-  } catch (error) {
-    console.error("Unable to connect to Redis:", error);
-  }
-};
+const { getPlayerSocket, INVALIDATED_TOKENS } = require("../utils/redisUtils");
+const { connect_redis, redisClient } = require("./connect_redis");
+
+const verifyToken = require("../utils/verifyToken");
+const start_cronjobs = require("./start_cronjobs");
 
 const startServer = async (server) => {
   const ws_server = http.createServer(server);
@@ -37,9 +21,12 @@ const startServer = async (server) => {
   });
 
   setup_websockets();
+  listen_to_events(io);
+  start_cronjobs(io);
 
   ws_server.listen(SERVER_PORT, "localhost", async () => {
     console.log(`Server connected successfully to port ${SERVER_PORT}`);
+
     await connect_database();
     await connect_redis();
   });
@@ -59,46 +46,58 @@ const setup_websockets = () => {
     const token = socket.handshake.query.token;
 
     if (token) {
-      const decoded = await verifyToken(token, secret);
+      try {
+        const decoded = await verifyToken(token, JWT_SECRET);
 
-      socket.playerId = decoded.playerId;
+        let is_invalidated_token = await redisClient.get(INVALIDATED_TOKENS);
+        is_invalidated_token = is_invalidated_token.split("|").includes(token);
 
-      redisClient.set(getPlayersSocket(socket.playerId), socket.id);
+        if (is_invalidated_token) {
+          return next(
+            new Error(
+              "Unauthorized: token has been invalidated, please login again"
+            )
+          );
+        }
+
+        socket.playerId = decoded.playerId;
+      } catch (error) {
+        console.log(error.message);
+
+        return next(new Error("Unauthorized: invalid token format"));
+      }
+
+      redisClient.set(getPlayerSocket(socket.playerId), socket.id);
       next();
     } else {
-      next(new Error("Unauthorized: no token was found"));
+      return next(new Error("Unauthorized: no token was found"));
     }
-  });
-
-  io.on("connect", (socket) => {
-    console.log(
-      `Player #${socket.playerId} connected on socket with id #${socket.id}`
-    );
-
-    socket.on("disconnect", () => {
-      console.log(
-        `Player #${socket.playerId} disconnected from socket with id #${socket.id}`
-      );
-
-      redisClient.del(getPlayersSocket(socket.playerId));
-    });
   });
 };
 
-const sendEvent = (event, params = {}) => {
-  io.emit(event, params);
+const socket_wrapper = (func, ...args) => {
+  return func(io, ...args);
 };
 
 /* 
 
 Example for client side:
-const socket = require("socket.io-client")("ws://localhost:3000");
+const token = "your jwt here";
+
+const io = require("socket.io-client")("ws://localhost:3000", {
+  query: {
+    token: <token>,
+  },
+});
 
 socket.on("connect", () => {
   console.log("Connected to the server");
-  socket.emit("message", "Hello from client");
 });
 
 */
 
-module.exports = { startServer, sendEvent, redisClient };
+module.exports = {
+  startServer,
+  socket_wrapper,
+  io,
+};
