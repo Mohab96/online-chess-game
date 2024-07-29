@@ -3,7 +3,7 @@ const socketIo = require("socket.io");
 const listen_to_events = require("../websocket_events/received_events");
 let io;
 
-const SERVER_PORT = process.env.SERVER_PORT || 3000;
+const SERVER_PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const connect_database = require("./connect_db");
 
@@ -24,8 +24,8 @@ const startServer = async (server) => {
   listen_to_events(io);
   start_cronjobs(io);
 
-  ws_server.listen(SERVER_PORT, "localhost", async () => {
-    console.log(`Server connected successfully to port ${SERVER_PORT}`);
+  ws_server.listen(SERVER_PORT, "0.0.0.0", async () => {
+    console.log(`Server connected successfully to port 3000`);
 
     await connect_database();
     await connect_redis();
@@ -36,9 +36,7 @@ const startServer = async (server) => {
   });
 };
 
-/* 
-  Authentication middleware for websockets
- */
+// Authentication middleware for websockets
 const setup_websockets = () => {
   io.use(async (socket, next) => {
     const token = socket.handshake.query.token;

@@ -1,11 +1,10 @@
 const redis = require("redis");
-const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const redisClient = redis.createClient(REDIS_PORT, "localhost");
+const redisClient = redis.createClient(6379, "redis");
 
 const connect_redis = async () => {
   try {
     await redisClient.connect();
-    console.log(`Redis connected successfully to port ${REDIS_PORT}`);
+    console.log(`Redis connected successfully to port 6379`);
   } catch (error) {
     console.error("Unable to connect to Redis:", error);
   }

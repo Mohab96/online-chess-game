@@ -30,6 +30,7 @@
     "postgresql": "^0.0.1",
     "postman-collection": "^4.4.0",
     "prisma": "^5.15.1",
+    "readme-md-generator": "^1.0.0",
     "redis": "^4.6.15",
     "socket.io": "^4.7.5",
     "speakeasy": "^2.0.0",
