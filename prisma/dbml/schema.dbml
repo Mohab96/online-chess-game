@@ -1,0 +1,136 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Player {
+  id Int [pk, increment]
+  username String [unique, not null]
+  email String [unique, not null]
+  password String [not null]
+  first_name String [not null]
+  last_name String [not null]
+  phone String [unique]
+  avatar String
+  in_game Boolean [not null, default: false]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [default: `now()`, not null]
+  socket_id String [unique]
+  friends Player [not null]
+  friend Player
+  sentFriendRequests FriendRequest [not null]
+  recievedFriendRequests FriendRequest [not null]
+  firstPlayerInGame Game [not null]
+  secondPlayerInGame Game [not null]
+  firstPlayerInChat Chat [not null]
+  secondPlayerInChat Chat [not null]
+  playerStats PlayerStats
+  settings Setting
+  messages Message [not null]
+}
+
+Table PlayerStats {
+  id Int [pk, increment]
+  wins Int [default: 0]
+  losses Int [default: 0]
+  draws Int [default: 0]
+  player Player [not null]
+  playerId Int [unique, not null]
+}
+
+Table FriendRequest {
+  id Int [pk, increment]
+  sender Player [not null]
+  senderId Int [not null]
+  receiver Player [not null]
+  receiverId Int [not null]
+  status FriendRequestStatus [not null, default: 'pending']
+  created_at DateTime [default: `now()`, not null]
+}
+
+Table Chat {
+  id Int [pk, increment]
+  first_message_index Int [not null, default: -1]
+  last_message_index Int [not null, default: -1]
+  created_at DateTime [default: `now()`, not null]
+  first_player Player [not null]
+  firstPlayerId Int [not null]
+  second_player Player [not null]
+  secondPlayerId Int [not null]
+  messages Message [not null]
+  game Game
+}
+
+Table Message {
+  id Int [pk, increment]
+  content String [not null]
+  index Int [not null]
+  sent_at DateTime [default: `now()`, not null]
+  sender Player [not null]
+  senderId Int [not null]
+  belongsToChat Chat [not null]
+  chatId Int [not null]
+}
+
+Table Game {
+  id Int [pk, increment]
+  first_player Player [not null]
+  firstPlayerId Int [not null]
+  second_player Player [not null]
+  secondPlayerId Int [not null]
+  started_at DateTime [default: `now()`, not null]
+  last_move_at DateTime [default: `now()`, not null]
+  turn Int [not null, default: 1]
+  board String [not null, default: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1']
+  moves Move [not null]
+  chat Chat [not null]
+  chatId Int [unique, not null]
+}
+
+Table Move {
+  id Int [pk, increment]
+  game Game [not null]
+  gameId Int [not null]
+  player Int [not null]
+  move_notation String [not null]
+  played_at DateTime [default: `now()`, not null]
+}
+
+Table Setting {
+  id Int [pk, increment]
+  player Player [not null]
+  playerId Int [unique, not null]
+  sound_enabled Boolean [not null, default: true]
+  takebacks_enabled Boolean [not null, default: true]
+}
+
+Enum FriendRequestStatus {
+  pending
+  accepted
+  rejected
+}
+
+Ref: Player.id > Player.id
+
+Ref: PlayerStats.playerId - Player.id
+
+Ref: FriendRequest.senderId > Player.id
+
+Ref: FriendRequest.receiverId > Player.id
+
+Ref: Chat.firstPlayerId > Player.id
+
+Ref: Chat.secondPlayerId > Player.id
+
+Ref: Message.senderId > Player.id
+
+Ref: Message.chatId > Chat.id
+
+Ref: Game.firstPlayerId > Player.id
+
+Ref: Game.secondPlayerId > Player.id
+
+Ref: Game.chatId - Chat.id
+
+Ref: Move.gameId > Game.id
+
+Ref: Setting.playerId - Player.id
