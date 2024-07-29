@@ -57,7 +57,7 @@ cd online-chess-game
 3. Copy the `.env.example` file to `.env`
 
 ```bash
-cpy .env.example .env
+cp .env.example .env
 ```
 
 4. Start filling the environment variables in the `.env` file, you can go with the default values for testing purposes except for `NODEMAILER_EMAIL` and `NODEMAILER_PASSWORD` which you need to fill with your email and password to be able to send emails.
@@ -140,7 +140,7 @@ npm install
 5. Copy the `.env.example` file to `.env`
 
 ```bash
-cpy .env.example .env
+cp .env.example .env
 ```
 
 6. Start filling the environment variables in the `.env` file, you can go with the default values for testing purposes except for `NODEMAILER_EMAIL` and `NODEMAILER_PASSWORD` which you need to fill with your email and password to be able to send emails.
