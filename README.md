@@ -14,11 +14,11 @@ The Online Chess Game API allows players to join chess games, make moves, invite
 
 # Features
 
-- Real-Time Gameplay: Experience instant game updates via WebSockets.
-- Player Management: Authenticate, manage profiles, and track progress.
-- Comprehensive Game Controls: Join games, make moves, and invite others.
-- Friends System: send and accept friend requests and view friends list.
-- API Documentation: Easily integrate with detailed API and WebSocket event documentation.
+- Real-Time Gameplay: Experience instant game updates via WebSockets. ⚡️
+- Player Management: Authenticate, manage profiles, and track progress. 👤
+- Comprehensive Game Controls: Join games, make moves, and invite others. ♟️
+- Friends System: send and accept friend requests and view friends list. 🤝
+- API Documentation: Easily integrate with detailed API and WebSocket event documentation. 📚
 
 ## Data Models
 
