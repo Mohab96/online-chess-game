@@ -6,10 +6,10 @@ The Online Chess Game API allows players to join chess games, make moves, invite
 
 ## Table of Contents
 
-- Data Models
-- Documentation
-- Usage
-- Contributing
+- [Data Models](#data-models)
+- [Documentation](#documentation)
+- [Usage](#usage)
+- [Contributing](#contributing)
 
 ## Data Models
 
