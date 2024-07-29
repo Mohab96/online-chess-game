@@ -21,10 +21,6 @@ const swaggerDefinition = {
       url: "http://localhost:3000/api",
       description: "Development server",
     },
-    {
-      url: "https://staging-api.example.com/v1",
-      description: "Production server",
-    },
   ],
 };
 

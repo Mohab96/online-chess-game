@@ -1,5 +1,5 @@
 const redis = require("redis");
-const redisClient = redis.createClient(6379, "redis");
+const redisClient = redis.createClient({ url: "redis://redis:6379" });
 
 const connect_redis = async () => {
   try {
