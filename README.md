@@ -163,6 +163,8 @@ npm start
 
 9. After the server is up and running, you can access the API at `http://localhost:3000`.
 
-Thsi is the dependency graph, a visual representation of the project's file dependencies. It shows how the files in the project depend on each other, rather than the dependencies in the node modules. This can be helpful for understanding the structure and relationships within the project.
+## Note
+
+This is the dependency graph, a visual representation of the project's file dependencies. It shows how the files in the project depend on each other, rather than the dependencies in the node modules. This can be helpful for understanding the structure and relationships within the project.
 
 ![Dependency Graph](assets/deps.jpg)
