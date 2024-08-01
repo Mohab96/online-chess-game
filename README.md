@@ -75,6 +75,8 @@ NODEMAILER_PASSWORD=password used by nodemailer
 
 If it is the fisrt time, you need to run the container with the `--build` flag to build the image first.
 
+Make sure that ports `5432`, `6379`, and `3000` are not used by other services.
+
 ```bash
 docker-compose up --build
 ```
